@@ -1,0 +1,36 @@
+:root {
+    --primary-light: #F0EFFF;
+    --primary: #F0EFFF;
+    --primary-dark: #5A54D4;
+
+    --white: #FFFFFF;
+
+    --greyLight: #F0F0F0;
+    --greyMedium: #757A94;
+    --black: #3F3D56;
+    --background: linear-gradient(90deg, #B1AFE9 20%, #F0EFFF 50%, #B1AFE9 80%);
+}
+
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: var(--background);
+    
+}
+
+.mainContainer {
+    background: white;
+    border-radius: 20px;
+    width: 310px;
+    min-height: 310px;
+    margin: 30px auto;
+    box-shadow: -.3rem -.2rem .5rem var(--black);
+}
+
+.footer {
+    text-align: center;
+    font-size: 18px;
+}

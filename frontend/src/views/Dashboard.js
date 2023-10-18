@@ -30,7 +30,7 @@ function Dashboard() {
         <div className={styles.message}>
           You successfully signed in with Passage. This is your homepage. <br />
           <br />
-          Your username is: {userInfo?.email}
+          <p>Welcome, {userInfo?.email} </p>
         </div>
         <LogoutButton />
       </div>
