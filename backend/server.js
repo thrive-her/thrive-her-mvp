@@ -1,6 +1,7 @@
 const express = require("express");
 const Passage = require("@passageidentity/passage-node");
 const cors = require("cors");
+const { getSupabase } = require("./supabase");
 
 const app = express();
 const PORT = 7001;
@@ -39,6 +40,20 @@ app.post("/auth", async (req, res) => {
     console.log(e);
     res.json({
       authStatus: "failure",
+    });
+  }
+});
+
+app.get("/events", async (req, res) => {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from("events").select();
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      events: data,
     });
   }
 });
