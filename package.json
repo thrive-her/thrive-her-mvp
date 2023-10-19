@@ -3,5 +3,11 @@
     "bootstrap": "cd ./backend && npm install && cd ../frontend && npm install",
     "start-frontend": "cd ./frontend && npm run start",
     "start-backend": "cd ./backend && npm run start"
+  },
+  "dependencies": {
+    "@passageidentity/passage-elements": "^1.14.0",
+    "@passageidentity/passage-node": "^2.6.0",
+    "@supabase/supabase-js": "^2.38.1",
+    "jsonwebtoken": "^9.0.2"
   }
 }
