@@ -1,18 +1,136 @@
-.dashboard{
-    padding: 30px 30px 20px;
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+
+:root {
+    --primary-light: #F0EFFF;
+    --primary: #F0EFFF;
+    --primary-dark: #5A54D4;
+
+    --white: #FFFFFF;
+
+    --greyLight: #F0F0F0;
+    --greyMedium: #757A94;
+    --black: #3F3D56;
+    --background: hsla(244, 100%, 97%, 1);
 }
 
+
+.dashboard{
+   margin: 0;
+   background: var(--white);
+   font-family: 'Lato', sans-serif;
+}
+
+.loginDashboard {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
 .title {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 30px;
+    color: var(--primary-dark)
 }
 
 .message {
     overflow-wrap: anywhere;
+    font-family: 'Lato', sans-serif;
 }
 
 .link {
     color: black;
     text-decoration-color: black;
 }
+
+.login {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-light);
+    color: var(--black);
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.login:hover {
+    background-color: var(--primary-dark);
+    color: var(--white);
+}
+
+.hero {
+    background-image: url("../assets/hero_illustration.png");
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+}
+
+.pages {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    background: var(--background);
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin-top: 30px;
+    padding: 10px;
+    background-color: white;
+    align-items: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.page:hover {
+    transform: scale(1.05);
+}
+
+.image {
+    flex: 0 0 30%;
+    max-width: 100%;
+    text-align: center;
+}
+
+.image img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.info {
+    padding: 20px;
+    text-align: center;
+}
+
+h3,
+p,
+.link {
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+.link {
+    display: block;
+    text-decoration: none;
+    background-color:var(--primary-dark);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+ @media (max-width: 600px) {
+     .dashboard {
+         min-width: 300px;
+     }
+ }
