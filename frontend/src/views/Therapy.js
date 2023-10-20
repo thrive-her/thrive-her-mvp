@@ -1,6 +1,7 @@
 import { PassageAuthGuard } from "@passageidentity/passage-react";
 import { usePassageUserInfo } from "../hooks/";
 import LogoutButton from "../components/LogoutButton";
+import styles from "../styles/Therapy.module.css";
 
 function Events() {
     const { userInfo } = usePassageUserInfo();
@@ -8,10 +9,10 @@ function Events() {
     return (
         <PassageAuthGuard
             unAuthComp={
-                <div>
-                    <div>you must be logged in</div>
-                    <div>
-                        <a href="/">Login</a>
+                <div className={styles.loginDashboard}>
+                    <div className={styles.title}>You must be logged in</div>
+                    <div className={styles.message}>
+                        <a className={styles.login} href="/">Login</a>
                     </div>
                 </div>
             }

@@ -1,9 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+
+:root {
+  --primary-light: #F0EFFF;
+  --primary: #F0EFFF;
+  --primary-dark: #5A54D4;
+
+  --white: #FFFFFF;
+
+  --greyLight: #F0F0F0;
+  --greyMedium: #757A94;
+  --black: #3F3D56;
+  --background: linear-gradient(90deg, #B1AFE9 20%, #F0EFFF 50%, #B1AFE9 80%);
+}
+
+
+
 .mainHeader {
-  padding: 20px 30px;
   display: flex;
+  justify-content: center;
   align-items: center;
-  background-color: #282727;
-  color: white;
+  background-color: var(--primary-dark);
+  color: var(--white);
 }
 
 .headerText {
@@ -11,16 +28,27 @@
   margin: 0px 10px;
 }
 
+.logowrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 .passageLogo {
-  background-image: url("https://storage.googleapis.com/passage-docs/passage-logo-dark.svg");
-  background-repeat: no-repeat;
+  
+  background-image: url("../assets/logo.svg");
+  background-size: contain;
   width: 60px;
   height: 60px;
   cursor: pointer;
+  display: flex;
+  filter: invert(1);
 }
 
 .spacer {
   flex-grow: 1;
+  
 }
 
 .link,
@@ -29,4 +57,43 @@ a:visited {
   margin-left: 20px;
   color: white;
   text-decoration-color: white;
+  color: inherit;
+  text-decoration: inherit;
 }
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 10px;
+  margin-right: 1px;
+}
+
+.link {
+  font-family: 'Lato', sans-serif;
+  display: inline-block;
+  font-size: 1em;
+  padding: 0.5em;
+  margin-top: 100px;
+  margin-bottom: 60px;
+  width: 9.0625rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: var(--white);
+  color: var(--black);
+  border-radius: 3.75rem;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: transform ease-in 0.1s, box-shadow ease-in 0.25s;
+  box-shadow: 0 2px 25px rgba(238, 231, 235, 0.5);
+}
+
+
+ @media (max-width: 600px) {
+   .mainHeader {
+     min-width: 300px;
+   }
+ }
