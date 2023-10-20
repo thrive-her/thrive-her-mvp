@@ -6,27 +6,94 @@ import styles from "../styles/Forum.module.css";
 
 function Forum() {
     const { userInfo } = usePassageUserInfo();
-    const [posts, setPosts] = useState([]); // State to store the fetched posts
+    const [posts, setPosts] = useState([]); // State to store the data
+    const [comments, setComments] = useState([]);
+    const [topics, setTopics] = useState([]);
+    const [originalPosts, setOriginalPosts] = useState([]);
+    const [selectedTopic, setSelectedTopic] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
-    // Function to fetch posts from the backend API
-    const fetchPosts = async () => {
+
+    // Function to fetch data from the backend API
+    const fetchData = async (endpoint, setState, errorText) => {
         try {
-        const response = await fetch('http://localhost:7001/posts'); // Make a GET request to your backend API endpoint
-        if (response.ok) {
-            const data = await response.json();
-            setPosts(data.posts); // Update the state with the fetched data
-        } else {
-            console.error('Failed to fetch posts');
-        }
+            const response = await fetch(`http://localhost:7001/${endpoint}`);
+            if (response.ok) {
+                const data = await response.json();
+                setState(data[endpoint]);
+            } else {
+                console.error(`Failed to fetch ${endpoint}`);
+            }
         } catch (error) {
-        console.error('Error fetching posts:', error);
+            console.error(`Error fetching ${endpoint}:`, error);
         }
     };
 
-    // Fetch posts when the component mounts
+    const fetchPosts = async () => {
+        try {
+            const response = await fetch('http://localhost:7001/posts');
+            if (response.ok) {
+                const data = await response.json();
+                const fetchedPosts = data.posts;
+                setPosts(fetchedPosts); // Update the posts with the fetched data
+                setOriginalPosts(fetchedPosts); // Save the original posts
+            } else {
+                console.error('Failed to fetch posts');
+            }
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+        }
+    };
+
+    const fetchComments = () => {
+        fetchData('comments', setComments, 'comments');
+    };
+
+    const fetchTopics = () => {
+        fetchData('topics', setTopics, 'topics');
+    };
+
+    // Fetch data when the component mounts
     useEffect(() => {
         fetchPosts();
+        fetchComments();
+        fetchTopics();
     }, []);
+
+    // Function to sort posts by date
+    const sortPosts = (order) => {
+        const sortedPosts = [...posts];
+        if (order === 'newest') {
+            sortedPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        } else if (order === 'oldest') {
+            sortedPosts.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        }
+        setPosts(sortedPosts);
+    };
+
+    // Function to filter posts by topic
+    const filterPostsByTopic = (topicId) => {
+        setSelectedTopic(topicId);
+
+        if (topicId) {
+            // Filter the posts based on the selected topic
+            const filteredPosts = originalPosts.filter((post) => post.topic_id === topicId);
+            setPosts(filteredPosts);
+        } else {
+            // If no topic is selected, return to the original posts
+            setPosts(originalPosts);
+        }
+    };
+
+    // Function to filter posts by search query
+    const filterPostsBySearch = (query) => {
+        setSearchQuery(query);
+        const filteredPosts = originalPosts.filter((post) => {
+            const lowerCaseQuery = query.toLowerCase();
+            return post.title.toLowerCase().includes(lowerCaseQuery) || post.body.toLowerCase().includes(lowerCaseQuery);
+        });
+        setPosts(filteredPosts);
+    };
 
     return (
         <PassageAuthGuard
@@ -45,10 +112,68 @@ function Forum() {
 
             <div>
                 <h2>Posts</h2>
-                <ul>
+                <div>
+                    <input
+                        type="text"
+                        placeholder="Search posts"
+                        value={searchQuery}
+                        onChange={(e) => filterPostsBySearch(e.target.value)}
+                    />
+                </div>
+                <div>
+                    Sort by:
+                    <button onClick={() => sortPosts('newest')}>Newest</button>
+                    <button onClick={() => sortPosts('oldest')}>Oldest</button>
+                </div>
+
                 {posts.map((post) => (
-                    <li key={post.id}>{post.title}</li> // Render your post data here
+                    <div key={post.id}>
+                            <ul>
+                                <li>{post.title}</li>
+                                <li>{post.created_at}</li>
+                                <li>{post.author_name}</li>
+                                <li>{post.body}</li>
+                            </ul>
+                    </div>
                 ))}
+            </div>
+
+            <div>
+                <h2>Comments</h2>
+                {comments.map((comment) => (
+                    <div key={comment.id}>
+                            <ul>
+                                <li>{comment.created_at}</li>
+                                <li>{comment.author_name}</li>
+                                <li>{comment.body}</li>
+                            </ul>
+                    </div>
+                ))}
+            </div>
+
+            <div>
+                <h2>Topics</h2>
+                <ul>
+                    <li
+                        key="all"
+                        onClick={() => filterPostsByTopic(null)} // Select "All" to return to all posts
+                        style={{
+                            fontWeight: selectedTopic === null ? 'bold' : 'normal',
+                        }}
+                    >
+                        All
+                    </li>
+                    {topics.map((topic) => (
+                        <li
+                            key={topic.id}
+                            onClick={() => filterPostsByTopic(topic.id)}
+                            style={{
+                                fontWeight: selectedTopic === topic.id ? 'bold' : 'normal',
+                            }}
+                        >
+                            {topic.name}
+                        </li>
+                    ))}
                 </ul>
             </div>
 
