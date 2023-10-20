@@ -4,7 +4,7 @@ import { usePassageUserInfo } from "../hooks/";
 import LogoutButton from "../components/LogoutButton";
 import styles from "../styles/Forum.module.css";
 
-function Events() {
+function Forum() {
     const { userInfo } = usePassageUserInfo();
     const [posts, setPosts] = useState([]); // State to store the fetched posts
 
@@ -14,7 +14,7 @@ function Events() {
         const response = await fetch('http://localhost:7001/posts'); // Make a GET request to your backend API endpoint
         if (response.ok) {
             const data = await response.json();
-            setPosts(data.events); // Update the state with the fetched data
+            setPosts(data.posts); // Update the state with the fetched data
         } else {
             console.error('Failed to fetch posts');
         }
@@ -56,4 +56,4 @@ function Events() {
     );
 }
 
-export default Events;
+export default Forum;
