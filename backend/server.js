@@ -73,7 +73,7 @@ app.get("/posts", async (req, res) => {
     });
   } else {
     res.json({
-      events: data,
+      posts: data,
     });
   }
 });
@@ -94,7 +94,7 @@ app.post('/posts', async (req, res) => {
       });
     } else {
       res.json({
-        events: data,
+        posts: data,
       });
     }
 });
@@ -108,7 +108,7 @@ app.get("/comments", async (req, res) => {
     });
   } else {
     res.json({
-      events: data,
+      comments: data,
     });
   }
 });
@@ -128,7 +128,7 @@ app.post('/comments', async (req, res) => {
       });
     } else {
       res.json({
-        events: data,
+        comments: data,
       });
     }
 });
@@ -143,7 +143,24 @@ app.get("/topics", async (req, res) => {
     });
   } else {
     res.json({
-      events: data,
+      topics: data,
+    });
+  }
+});
+
+//therapy
+
+app.get("/therapy", async (req, res) => {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from("therapy").select();
+  console.log(data);
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      therapy: data,
     });
   }
 });
