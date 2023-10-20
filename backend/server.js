@@ -58,6 +58,21 @@ app.get("/events", async (req, res) => {
   }
 });
 
+app.get("/therapy", async (req, res) => {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from("therapy").select();
+  console.log(data);
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      therapy: data,
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
