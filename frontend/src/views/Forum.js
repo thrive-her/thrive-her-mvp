@@ -6,13 +6,17 @@ import styles from "../styles/Forum.module.css";
 
 function Forum() {
     const { userInfo } = usePassageUserInfo();
-    const [posts, setPosts] = useState([]); // State to store the data
-    const [comments, setComments] = useState([]);
+    const [posts, setPosts] = useState([]);
     const [topics, setTopics] = useState([]);
     const [originalPosts, setOriginalPosts] = useState([]);
     const [selectedTopic, setSelectedTopic] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-
+    const [newPost, setNewPost] = useState({
+        topic_id: '',
+        title: '',
+        body: '',
+        author_name: userInfo? `${userInfo.first_name} ${userInfo.last_name ? userInfo.last_name.charAt(0) : ''}`: '', // Use the logged-in user's name
+    });
 
     // Function to fetch data from the backend API
     const fetchData = async (endpoint, setState, errorText) => {
@@ -111,6 +115,42 @@ function Forum() {
         setPosts(filteredPosts);
     };
 
+    const handlePostChange = (e) => {
+        const { name, value } = e.target;
+        setNewPost({
+            ...newPost,
+            [name]: value,
+        });
+    };
+
+    const submitNewPost = async () => {
+        try {
+            const response = await fetch('http://localhost:7001/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newPost),
+            });
+
+            if (response.ok) {
+                // Fetch posts again to update the list with the new post
+                fetchPosts();
+                // Clear the input fields
+                setNewPost({
+                    topic_id: '', // Set an initial topic ID if needed
+                    title: '',
+                    body: '',
+                    author_name: userInfo?.email, // Use the logged-in user's email as the author
+                });
+            } else {
+                console.error('Failed to create a new post');
+            }
+        } catch (error) {
+            console.error('Error creating a new post:', error);
+        }
+    };
+
     return (
         <PassageAuthGuard
             unAuthComp={
@@ -190,6 +230,41 @@ function Forum() {
                         </li>
                     ))}
                 </ul>
+            </div>
+
+            <div>
+                <h2>Create a New Post</h2>
+                <form>
+                    <div>
+                        <label>Topic ID:</label>
+                        <input
+                            type="text"
+                            name="topic_id"
+                            value={newPost.topic_id}
+                            onChange={handlePostChange}
+                        />
+                    </div>
+                    <div>
+                        <label>Title:</label>
+                        <input
+                            type="text"
+                            name="title"
+                            value={newPost.title}
+                            onChange={handlePostChange}
+                        />
+                    </div>
+                    <div>
+                        <label>Body:</label>
+                        <textarea
+                            name="body"
+                            value={newPost.body}
+                            onChange={handlePostChange}
+                        />
+                    </div>
+                    <button type="button" onClick={submitNewPost}>
+                        Submit
+                    </button>
+                </form>
             </div>
 
         </PassageAuthGuard>
