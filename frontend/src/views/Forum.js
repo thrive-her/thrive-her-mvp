@@ -31,22 +31,27 @@ function Forum() {
 
     const fetchPosts = async () => {
         try {
-            const response = await fetch('http://localhost:7001/posts');
-            if (response.ok) {
-                const data = await response.json();
-                const fetchedPosts = data.posts;
-                setPosts(fetchedPosts); // Update the posts with the fetched data
-                setOriginalPosts(fetchedPosts); // Save the original posts
+            const postResponse = await fetch('http://localhost:7001/posts');
+            const commentResponse = await fetch('http://localhost:7001/comments');
+
+            if (postResponse.ok && commentResponse.ok) {
+                const postData = await postResponse.json();
+                const commentData = await commentResponse.json();
+
+                // Map comments to their respective posts
+                const postsWithComments = postData.posts.map((post) => ({
+                    ...post,
+                    comments: commentData.comments.filter(comment => comment.post_id === post.id)
+                }));
+
+                setPosts(postsWithComments); // Update the posts with comments
+                setOriginalPosts(postsWithComments); // Save the original posts
             } else {
-                console.error('Failed to fetch posts');
+                console.error('Failed to fetch posts or comments');
             }
         } catch (error) {
-            console.error('Error fetching posts:', error);
+            console.error('Error fetching posts or comments:', error);
         }
-    };
-
-    const fetchComments = () => {
-        fetchData('comments', setComments, 'comments');
     };
 
     const fetchTopics = () => {
@@ -56,7 +61,6 @@ function Forum() {
     // Fetch data when the component mounts
     useEffect(() => {
         fetchPosts();
-        fetchComments();
         fetchTopics();
     }, []);
 
@@ -88,10 +92,22 @@ function Forum() {
     // Function to filter posts by search query
     const filterPostsBySearch = (query) => {
         setSearchQuery(query);
+        const lowerCaseQuery = query.toLowerCase();
+
         const filteredPosts = originalPosts.filter((post) => {
-            const lowerCaseQuery = query.toLowerCase();
-            return post.title.toLowerCase().includes(lowerCaseQuery) || post.body.toLowerCase().includes(lowerCaseQuery);
+            // Check if the post's title or body contains the query
+            const titleMatch = post.title.toLowerCase().includes(lowerCaseQuery);
+            const bodyMatch = post.body.toLowerCase().includes(lowerCaseQuery);
+
+            // Check if any of the post's comments contain the query
+            const commentsMatch = post.comments.some((comment) =>
+                comment.body.toLowerCase().includes(lowerCaseQuery)
+            );
+
+            // Include the post in the result if either the title/body or comments match
+            return titleMatch || bodyMatch || commentsMatch;
         });
+
         setPosts(filteredPosts);
     };
 
@@ -128,25 +144,24 @@ function Forum() {
 
                 {posts.map((post) => (
                     <div key={post.id}>
-                            <ul>
-                                <li>{post.title}</li>
-                                <li>{post.created_at}</li>
-                                <li>{post.author_name}</li>
-                                <li>{post.body}</li>
-                            </ul>
-                    </div>
-                ))}
-            </div>
-
-            <div>
-                <h2>Comments</h2>
-                {comments.map((comment) => (
-                    <div key={comment.id}>
-                            <ul>
-                                <li>{comment.created_at}</li>
-                                <li>{comment.author_name}</li>
-                                <li>{comment.body}</li>
-                            </ul>
+                        <ul>
+                            <li>{post.title}</li>
+                            <li>{post.created_at}</li>
+                            <li>{post.author_name}</li>
+                            <li>{post.body}</li>
+                        </ul>
+                        <div>
+                            <h2>Comments</h2>
+                            {post.comments.map((comment) => (
+                                <div key={comment.id}>
+                                        <ul>
+                                            <li>{comment.created_at}</li>
+                                            <li>{comment.author_name}</li>
+                                            <li>{comment.body}</li>
+                                        </ul>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ))}
             </div>
