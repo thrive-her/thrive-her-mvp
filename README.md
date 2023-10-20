@@ -1,16 +1,62 @@
 <p>
     <img src="https://storage.googleapis.com/passage-docs/passage-logo-gradient.svg" alt="Passage logo" style="width:150px;"/>
     <img src="https://bookface-images.s3.amazonaws.com/logos/f193d070e480ede387ee00a9006482bee4a6b8dd.png" alt="Women Who Code logo" style="width:150px;"/>
-
+<img width="10593" alt="logo" src="https://github.com/thrive-her/thrive-her-mvp/assets/112290188/e1d510a9-218b-484c-a49b-2238cba525cd" style="width:150px;">
 </p>
 
-# Passage Auth - React App with Express.js Backend Hackathon Starter
-
-Women Who Code Hackathon for Social Good 2023
+# ThriveHer - Women Who Code Hackathon for Social Good 2023
 
 [Hackathon Website](https://hopin.com/events/wwcode-hackathon-for-social-good/registration)
 
-This repository acts as a boilerplate for React/Express applications with 1Password's [Passage Authentication](https://passage.1password.com/). The team at Passage has created this with the hope to make it easy for everyone to contribute to hackathon projects as quickly as possible. The app is ready to go with Passage biometric or magic link user authentication.
+## Overview
+
+Our project addresses the challenge of providing a safe and tailored community forum for women to discuss our unique challenges such as perinatal and postpartum support, parenting, fertility, body image, and mental health. It offers features like user registration, discussion boards, 1-1 therapy access, crisis support, and expert talks, creating a nurturing environment. This solution benefits society by addressing women’s emotional and mental health needs, reducing stigmas, and empowering women to seek support. The chosen tech stacks, including React for an interactive interface, Passage Authentication for enhanced security and user-friendliness, and Express and Node for scalability, play a crucial role in making this platform a secure, accessible, and supportive space for women.
+
+## How does it work?
+
+This guide will walk you through how to use our platform effectively. Our solution is built with React for an interactive interface, Passage Authentication for enhanced security and user-friendliness, and Express and Node for scalability. Once you've logged in, you can access four main pages: Forum, Events, Crisis Text Line, and Therapy. Let's get started!
+
+### Section 1: Logging In
+
+1.1. Open your web browser and navigate to our platform's URL.
+
+1.2. Click on the "Login" button.
+
+1.3. Enter your registered email address, first name, and last name.
+
+1.4. Set up your profile by either using a passkey or a magic code.
+
+1.5 Click the "Log In" button.
+
+### Section 2: Navigating the Platform
+
+2.0. Dashboard 
+
+Once you log in, you'll land on the home page. Here you can have an overview of who we are and what our platform offers. You will be able to choose to Forum Page, Events Page, Therapy Page, or Text Crisis Line (external). 
+
+2.1. Forum Page:
+
+You'll land on the Forum page. Here, you can join discussions, share experiences, and seek advice from the community.
+
+2.2. Events Page:
+
+The Events page lets you stay updated on upcoming events, expert talks, and webinars.
+
+2.3. Crisis Text Line:
+
+If you require immediate support, click on the "Crisis Text Line" page. 
+
+2.4. Therapy Page:
+
+The Therapy page provides access to tailored 1-on-1 therapy sessions. 
+
+### Section 3: Account Settings
+
+3.1. To access your profile, click on the profile button at the top-right corner.
+
+### Section 4: Logging Out
+
+4.1. To log out, click on the logout button at the top-right corner.
 
 ## Passage
 
@@ -26,12 +72,19 @@ You can reach out to the team for support via [Discord](https://discord.com/invi
 
 # Installation
 
-To run this application, follow the instructions below to install and start the application.
+1. Clone the product locally
+2. On GitHub, navigate to the repo for your cohort’s project (you’re probably there right now), then:
+3. Click on the "Code" tab. It may already be selected.
+4. Click the green "Code" button to reveal a "Clone" popup.
+5. The "HTTPS" tab should be automatically selected. If not, click "HTTPS."
+6. Click the copy button to copy the url of this repository to your clipboard. screenshot of "Code" tab on GitHub
+7. From your terminal, cd into the directory where you want this project to live. screenshot of how to navigate folders in terminal
+8. Once you’re in the directory, type git clone followed by the web URL you just copied to your clipboard from GitHub. Then cd into the directory that is created.
 
 ### Configure Your Environment Variables
 
-1. Rename the EXAMPLE.env file to .env for both the frontend and backend directories
-2. Replace the example variables for each .env file with your own Passage App ID and API Key. You can get these from the [Passage Console](https://console.passage.id).
+1. Add a .env file to both the frontend and backend directories
+2. Add variables (PASSAGE_APP_ID and PASSAGE_API_KEY) for each .env file with your own Passage App ID and API Key. You can get these from the [Passage Console](https://console.passage.id).
 
 ## Install Dependencies & Run Backend/Frontend
 
@@ -52,81 +105,3 @@ npm run start-frontend
 ```
 
 The application will run on http://localhost:3000, which you can navigate to in your browser.
-
-## Authenticate Requests With Passage
-
-Navigate to [http://localhost:3000](http://localhost:3000) and see what it's like authenticating users using Passage with React and an Express.js backend!
-
-<br/><br/>
-
-# Using Passage with Express.js
-
-Import passage from npm:
-
-```javascript
-const Passage = require("@passageidentity/passage-node");
-```
-
-Instantiate the Passage class:
-
-```javascript
-const passage = new Passage({
-  appID: process.env.PASSAGE_APP_ID,
-  apiKey: process.env.PASSAGE_API_KEY,
-  authStrategy: "HEADER",
-});
-```
-
-Declare an Express route and use the instantiated Passage class to authenticate users!
-
-```javascript
-app.post("/auth", async (req, res) => {
-  try {
-    const userID = await passage.authenticateRequest(req);
-    if (userID) {
-      // user is authenticated
-      const { email, phone } = await passage.user.get(userID);
-      const identifier = email ? email : phone;
-
-      res.json({
-        authStatus: "success",
-        identifier,
-      });
-    }
-  } catch (e) {
-    // authentication failed
-    console.log(e);
-    res.json({
-      authStatus: "failure",
-    });
-  }
-});
-```
-
-<br/><br/>
-
-# Using Passage with React
-
-## Importing and Using the Passage-Auth Custom Element
-
-The easiest way to add authentication to a web frontend is with a Passage Auth custom element. First you'll need to install the [passage-elements](https://www.npmjs.com/package/@passageidentity/passage-elements) package from npm:
-
-```
-npm i --save @passageidentity/passage-elements
-```
-
-Then import the package in the module where you intend to use the custom element
-
-```
-import '@passageidentity/passage-elements/passage-auth'
-```
-
-Importing this script will register the Passage custom element for use in your React components. For more information about custom elements refer to the [online documentation](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements).
-
-Its then just a matter of embedding the passage-auth element into your component that will handle login. This is done in this example in the home component:
-
-```html
-<div className="form-container">
-  <passage-auth app-id="{process.env.REACT_APP_PASSAGE_APP_ID}" />
-</div>
-```
