@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import styles from "../styles/Events.module.css";
 import { PassageAuthGuard } from "@passageidentity/passage-react";
 import { usePassageUserInfo } from "../hooks/";
@@ -8,7 +9,49 @@ import menopause from "../assets/understanding\ menopause\ png.png";
 import mindfulness from "../assets/mindfulness\ self\ love\ png.png";
 
 function Events() {
-const { userInfo } = usePassageUserInfo();
+  const { userInfo } = usePassageUserInfo();
+  const [events, setEvents] = useState([]);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch('http://localhost:7001/events');
+
+      if (response.ok) {
+        const data = await response.json();
+        setEvents(data.events);
+      } else {
+        console.error('Failed to fetch events')
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  function formatDate(date_string) {
+    let date = new Date(date_string)
+    return date.toLocaleDateString('en-us', {weekday: "long", year: "numeric", month: "long", day: "numeric"})
+  }
+
+  function formatTime(time_string) {
+    let no_seconds = time_string.slice(0, -6);
+    let hours_and_minutes = no_seconds.split(':');
+    let hours = hours_and_minutes[0];
+
+    if (hours === 0) {
+      hours = 12 + 'pm'
+    } else if (hours > 0 && hours <= 12) {
+      hours = hours + 'am'
+    } else if (hours > 12) {
+      hours = hours - 12 + 'pm'
+    }
+
+    return hours;
+  }
+
   return (
     <div className={styles.wrapper}>
       <PassageAuthGuard
@@ -28,24 +71,18 @@ const { userInfo } = usePassageUserInfo();
             <p>View upcoming events and register free!</p>
           </div>
           <div className={styles.cardWrapper}>
-            <EventCard
-              image={health}
-              title="Women's Health: Fact vs. Fiction"
-              date="Saturday, November 4th, 11am-1pm EST"
-              description="This event is for women of all ages and will feature candid discussions with healthcare professionals from the UVM School of Medicine about: self care, mental health, sexual health, contraceptives, and more!"
-            />
-            <EventCard
-              image={mindfulness}
-              title="Mindfulness, Self-Love, and Community"
-              date="Monday, November 6th, 8-10pm EST"
-              description="Learn techniques to cultivate mindfulness and inner peace through positive mindset and gratitude.  Explore personal topics and set intentions for growth.  Hosted by practitioners at Life Growth Academy."
-            />
-            <EventCard
-              image={menopause}
-              title="Understanding Menopause"
-              date="Wednesday, November 8, 11am-1pm EST"
-              description="Join Patty Leger, CEO of WomenNow and Marissa Thomas, an advanced practice RN as we dive into menopause and what treatments including alternative remedies that can help alleviate symptoms."
-            />
+            {events.map((event) => (
+              <EventCard
+                key={event.id}
+                image={
+                  (event.title.includes("Health")) ? health :
+                  (event.title.includes("Menopause") ? menopause : mindfulness)
+                }
+                title={event.title}
+                date={formatDate(event.event_date) + ", " + formatTime(event.event_start_time) + " - " + formatTime(event.event_end_time)}
+                description={event.description}
+              />
+            ))}
           </div>
         </div>
       </PassageAuthGuard>
