@@ -62,7 +62,7 @@ function Dashboard() {
             <div className={styles.info}>
               <h3>Crisis Text Line</h3>
               <p>Get immediate help and support via text.</p>
-              <a className={styles.link} href="/crisistextline">Learn More</a>
+              <a className={styles.link} href="https://www.crisistextline.org/text-us/">Learn More</a>
             </div>
           </div>
           <div className={styles.page} role="region" aria-label="Events">

@@ -22,6 +22,8 @@ const passage = new Passage({
   authStrategy: "HEADER",
 });
 
+// passage authentication
+
 app.post("/auth", async (req, res) => {
   try {
     const userID = await passage.authenticateRequest(req);
@@ -44,6 +46,8 @@ app.post("/auth", async (req, res) => {
   }
 });
 
+//events
+
 app.get("/events", async (req, res) => {
   const supabase = getSupabase();
   const { data, error } = await supabase.from("events").select();
@@ -54,6 +58,109 @@ app.get("/events", async (req, res) => {
   } else {
     res.json({
       events: data,
+    });
+  }
+});
+
+//forum
+
+app.get("/posts", async (req, res) => {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from("posts").select();
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      posts: data,
+    });
+  }
+});
+
+app.post('/posts', async (req, res) => {
+  const supabase = getSupabase();
+    const { data, error } = await supabase
+        .from('posts')
+      .insert({
+            topic_id: req.body.topic_id,
+            title: req.body.title,
+            body: req.body.body,
+            author_name: req.body.author_name,
+        })
+    if (error) {
+      res.json({
+        error,
+      });
+    } else {
+      res.json({
+        posts: data,
+      });
+    }
+});
+
+app.get("/comments", async (req, res) => {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from("comments").select();
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      comments: data,
+    });
+  }
+});
+
+app.post('/comments', async (req, res) => {
+  const supabase = getSupabase();
+    const { data, error } = await supabase
+        .from('comments')
+        .insert({
+            post_id: req.body.post_id,
+            body: req.body.body,
+            author_name: req.body.author_name,
+        })
+    if (error) {
+      res.json({
+        error,
+      });
+    } else {
+      res.json({
+        comments: data,
+      });
+    }
+});
+
+
+app.get("/topics", async (req, res) => {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from("topics").select();
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      topics: data,
+    });
+  }
+});
+
+//therapy
+
+app.get("/therapy", async (req, res) => {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from("therapy").select();
+  console.log(data);
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      therapy: data,
     });
   }
 });
