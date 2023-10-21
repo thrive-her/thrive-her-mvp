@@ -11,9 +11,17 @@ function Forum() {
     const [originalPosts, setOriginalPosts] = useState([]);
     const [selectedTopic, setSelectedTopic] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [commentForms, setCommentForms] = useState({});
+    const [showCreatePostForm, setShowCreatePostForm] = useState(false);
     const [newPost, setNewPost] = useState({
         topic_id: '',
         title: '',
+        body: '',
+        author_name: userInfo? `${userInfo.first_name} ${userInfo.last_name ? userInfo.last_name.charAt(0) : ''}`: '', // Use the logged-in user's name
+    });
+
+    const [newComment, setNewComment] = useState({
+        post_id: '', // populated with post
         body: '',
         author_name: userInfo? `${userInfo.first_name} ${userInfo.last_name ? userInfo.last_name.charAt(0) : ''}`: '', // Use the logged-in user's name
     });
@@ -115,12 +123,34 @@ function Forum() {
         setPosts(filteredPosts);
     };
 
+
     const handlePostChange = (e) => {
         const { name, value } = e.target;
         setNewPost({
             ...newPost,
             [name]: value,
         });
+    };
+
+    const handleCommentChange = (e) => {
+        const { name, value } = e.target;
+        setNewComment({
+            ...newComment,
+            [name]: value,
+        });
+    };
+
+    // Function to handle comment form state
+    const toggleCommentForm = (postId) => {
+        setCommentForms((prevForms) => ({
+            ...prevForms,
+            [postId]: !prevForms[postId],
+        }));
+    };
+
+    // Function to toggle the visibility of the create post form
+    const toggleCreatePostForm = () => {
+        setShowCreatePostForm(!showCreatePostForm);
     };
 
     const submitNewPost = async () => {
@@ -148,6 +178,45 @@ function Forum() {
             }
         } catch (error) {
             console.error('Error creating a new post:', error);
+        }
+    };
+
+    const submitNewComment = async (postId) => {
+        try {
+            const postToComment = posts.find(post => post.id === postId);
+            if (!postToComment) {
+                console.error('Post not found for comment');
+                return;
+            }
+
+            const response = await fetch('http://localhost:7001/comments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    post_id: postId,
+                    body: newComment.body,
+                    author_name: newComment.author_name,
+                }),
+            });
+
+            if (response.ok) {
+                // Fetch posts again to update the list with the new comment
+                fetchPosts();
+                // Clear the input fields
+                setNewComment({
+                    post_id: '', // Reset post_id
+                    body: '',
+                    author_name: userInfo?.email, // Use the logged-in user's email as the author
+                });
+                // Close the comment form
+                toggleCommentForm(postId);
+            } else {
+                console.error('Failed to create a new comment');
+            }
+        } catch (error) {
+            console.error('Error creating a new comment:', error);
         }
     };
 
@@ -184,6 +253,7 @@ function Forum() {
 
                 {posts.map((post) => (
                     <div key={post.id}>
+                        <h2>Posts</h2>
                         <ul>
                             <li>{post.title}</li>
                             <li>{post.created_at}</li>
@@ -201,6 +271,35 @@ function Forum() {
                                         </ul>
                                 </div>
                             ))}
+
+{commentForms[post.id] ? (
+                            <div>
+                                <h2>Create a New Comment</h2>
+                                <form>
+                                    <div>
+                                        <label>Body:</label>
+                                        <textarea
+                                            name="body"
+                                            value={newComment.body}
+                                            onChange={handleCommentChange}
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => submitNewComment(post.id)}
+                                    >
+                                        Submit
+                                    </button>
+                                </form>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => toggleCommentForm(post.id)}
+                            >
+                                Add Comment
+                            </button>
+                        )}
                         </div>
                     </div>
                 ))}
@@ -232,40 +331,46 @@ function Forum() {
                 </ul>
             </div>
 
-            <div>
-                <h2>Create a New Post</h2>
-                <form>
-                    <div>
-                        <label>Topic ID:</label>
-                        <input
-                            type="text"
-                            name="topic_id"
-                            value={newPost.topic_id}
-                            onChange={handlePostChange}
-                        />
-                    </div>
-                    <div>
-                        <label>Title:</label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={newPost.title}
-                            onChange={handlePostChange}
-                        />
-                    </div>
-                    <div>
-                        <label>Body:</label>
-                        <textarea
-                            name="body"
-                            value={newPost.body}
-                            onChange={handlePostChange}
-                        />
-                    </div>
-                    <button type="button" onClick={submitNewPost}>
-                        Submit
-                    </button>
-                </form>
-            </div>
+            <button type="button" onClick={toggleCreatePostForm}>
+                Add Post
+            </button>
+
+            {showCreatePostForm && (
+                <div>
+                    <h2>Create a New Post</h2>
+                    <form>
+                        <div>
+                            <label>Topic ID:</label>
+                            <input
+                                type="text"
+                                name="topic_id"
+                                value={newPost.topic_id}
+                                onChange={handlePostChange}
+                            />
+                        </div>
+                        <div>
+                            <label>Title:</label>
+                            <input
+                                type="text"
+                                name="title"
+                                value={newPost.title}
+                                onChange={handlePostChange}
+                            />
+                        </div>
+                        <div>
+                            <label>Body:</label>
+                            <textarea
+                                name="body"
+                                value={newPost.body}
+                                onChange={handlePostChange}
+                            />
+                        </div>
+                        <button type="button" onClick={submitNewPost}>
+                            Submit
+                        </button>
+                    </form>
+                </div>
+            )}
 
         </PassageAuthGuard>
     );
