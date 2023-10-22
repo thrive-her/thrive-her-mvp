@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { PassageAuthGuard } from "@passageidentity/passage-react";
-import { usePassageUserInfo } from "../hooks/";
-import LogoutButton from "../components/LogoutButton";
 import styles from "../styles/Therapy.module.css";
 import { TherapistCard } from "../components/TherapistCard";
 

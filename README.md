@@ -1,7 +1,7 @@
 <p>
     <img src="https://storage.googleapis.com/passage-docs/passage-logo-gradient.svg" alt="Passage logo" style="width:150px;"/>
     <img src="https://bookface-images.s3.amazonaws.com/logos/f193d070e480ede387ee00a9006482bee4a6b8dd.png" alt="Women Who Code logo" style="width:150px;"/>
-<img width="10593" alt="logo" src="https://github.com/thrive-her/thrive-her-mvp/assets/112290188/e1d510a9-218b-484c-a49b-2238cba525cd" style="width:150px;">
+<img width="10593" alt="logo" src="https://github.com/thrive-her/thrive-her-mvp/assets/112290188/1e00aec3-cdcc-4676-8e26-56c593fdf5d8" style="width:150px;">
 </p>
 
 # ThriveHer - Women Who Code Hackathon for Social Good 2023
@@ -15,6 +15,8 @@ Our project addresses the challenge of providing a safe and tailored community f
 ## How does it work?
 
 This guide will walk you through how to use our platform effectively. Our solution is built with React for an interactive interface, Passage Authentication for enhanced security and user-friendliness, and Express and Node for scalability. Once you've logged in, you can access four main pages: Forum, Events, Crisis Text Line, and Therapy. Let's get started!
+
+## Demo: 
 
 ### Section 1: Logging In
 
@@ -58,6 +60,13 @@ The Therapy page provides access to tailored 1-on-1 therapy sessions.
 
 4.1. To log out, click on the logout button at the top-right corner.
 
+### User Map(Current + Future Roadmap)
+![flow diagram Thrive HER](https://github.com/thrive-her/thrive-her-mvp/assets/112290188/548b6f2d-7a7c-494d-aa3b-969babd9433e)
+
+
+## Technology: 
+This project was built utilizing a combination of React, Passage Authentication, Express, Node, and Supabase. 
+
 ## Passage
 
 Passage is a authentication as a service platform that allows you to provide passwordless authentication to your users without having to worry about the initial setup and continuous maintenance high quality authentication requires. 
@@ -84,7 +93,16 @@ You can reach out to the team for support via [Discord](https://discord.com/invi
 ### Configure Your Environment Variables
 
 1. Add a .env file to both the frontend and backend directories
-2. Add variables (PASSAGE_APP_ID and PASSAGE_API_KEY) for each .env file with your own Passage App ID and API Key. You can get these from the [Passage Console](https://console.passage.id).
+2. Add the following variables for backend .env file with your own. You can get these from the [Passage Console](https://console.passage.id) and [Supabase Console](https://supabase.com/).
+``PASSAGE_APP_ID=
+PASSAGE_API_KEY=
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_JWT_SECRET=
+SUPABASE_API_TOKEN=``
+4. Add variables for the frontend:
+``GENERATE_SOURCEMAP=false
+REACT_APP_PASSAGE_APP_ID =``
 
 ## Install Dependencies & Run Backend/Frontend
 
