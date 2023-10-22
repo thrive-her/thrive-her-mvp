@@ -93,7 +93,16 @@ You can reach out to the team for support via [Discord](https://discord.com/invi
 ### Configure Your Environment Variables
 
 1. Add a .env file to both the frontend and backend directories
-2. Add variables (PASSAGE_APP_ID and PASSAGE_API_KEY) for each .env file with your own Passage App ID and API Key. You can get these from the [Passage Console](https://console.passage.id).
+2. Add the following variables for backend .env file with your own. You can get these from the [Passage Console](https://console.passage.id) and [Supabase Console](https://supabase.com/).
+``PASSAGE_APP_ID=
+PASSAGE_API_KEY=
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_JWT_SECRET=
+SUPABASE_API_TOKEN=``
+4. Add variables for the frontend:
+``GENERATE_SOURCEMAP=false
+REACT_APP_PASSAGE_APP_ID =``
 
 ## Install Dependencies & Run Backend/Frontend
 
