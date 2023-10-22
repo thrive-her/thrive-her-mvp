@@ -1,7 +1,8 @@
 const express = require("express");
 const Passage = require("@passageidentity/passage-node");
 const cors = require("cors");
-const { getSupabase } = require("./supabase");
+const { getSupabase, getAuthSupabase } = require("./supabase");
+
 
 const app = express();
 const PORT = 7001;
@@ -64,8 +65,9 @@ app.get("/events", async (req, res) => {
 
 //forum
 
-app.get("/posts", async (req, res) => {
-  const supabase = getSupabase();
+app.get("/posts/:userID", async (req, res) => {
+  const userID = req.params.userID;
+  const supabase = getAuthSupabase(userID);
   const { data, error } = await supabase.from("posts").select();
   if (error) {
     res.json({
@@ -79,28 +81,68 @@ app.get("/posts", async (req, res) => {
 });
 
 app.post('/posts', async (req, res) => {
-  const supabase = getSupabase();
-    const { data, error } = await supabase
-        .from('posts')
-      .insert({
-            topic_id: req.body.topic_id,
-            title: req.body.title,
-            body: req.body.body,
-            author_name: req.body.author_name,
-        })
-    if (error) {
-      res.json({
-        error,
-      });
-    } else {
-      res.json({
-        posts: data,
-      });
-    }
+  const { userID } = req.body;
+  const supabase = getAuthSupabase(userID);
+  const { data, error } = await supabase
+    .from('posts')
+    .insert({
+      title: req.body.title,
+      body: req.body.body,
+      author_name: req.body.author_name,
+      topic_id: req.body.topic_id,
+      user_id: userID,
+    })
+
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      posts: data,
+    });
+  }
 });
 
-app.get("/comments", async (req, res) => {
-  const supabase = getSupabase();
+
+app.put('/posts', async (req, res) => {
+  const { userID } = req.body;
+  const supabase = getAuthSupabase(userID);
+  const { data, error } = await supabase.from('posts').update({
+    title: req.body.title,
+    body: req.body.body,
+  }).eq('id', req.body.id)
+
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      posts: data,
+    });
+  }
+});
+
+app.delete('/posts', async (req, res) => {
+  const { userID } = req.body;
+  const supabase = getAuthSupabase(userID);
+  const { data, error } = await supabase.from('posts').delete().eq('id', req.body.id)
+
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      posts: data,
+    });
+  }
+});
+
+app.get("/comments/:userID", async (req, res) => {
+  const userID = req.params.userID;
+  const supabase = getAuthSupabase(userID);
   const { data, error } = await supabase.from("comments").select();
   if (error) {
     res.json({
@@ -114,23 +156,60 @@ app.get("/comments", async (req, res) => {
 });
 
 app.post('/comments', async (req, res) => {
-  const supabase = getSupabase();
-    const { data, error } = await supabase
-        .from('comments')
-        .insert({
-            post_id: req.body.post_id,
-            body: req.body.body,
-            author_name: req.body.author_name,
-        })
-    if (error) {
-      res.json({
-        error,
-      });
-    } else {
-      res.json({
-        comments: data,
-      });
-    }
+  const { userID } = req.body;
+  const supabase = getAuthSupabase(userID);
+  const { data, error } = await supabase
+    .from('comments')
+    .insert({
+      body: req.body.body,
+      post_id: req.body.post_id,
+      user_id: userID,
+    })
+
+  if (error) {
+    res.json({
+      error,
+    });
+  }
+  else {
+    res.json({
+      comments: data,
+    });
+  }
+});
+
+app.put('/comments', async (req, res) => {
+  const { userID } = req.body;
+  const supabase = getAuthSupabase(userID);
+  const { data, error } = await supabase.from('comments').update({
+    body: req.body.body,
+  }).eq('id', req.body.id)
+
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      comments: data,
+    });
+  }
+});
+
+app.delete('/comments', async (req, res) => {
+  const { userID } = req.body;
+  const supabase = getAuthSupabase(userID);
+  const { data, error } = await supabase.from('comments').delete().eq('id', req.body.id)
+
+  if (error) {
+    res.json({
+      error,
+    });
+  } else {
+    res.json({
+      comments: data,
+    });
+  }
 });
 
 
@@ -153,7 +232,6 @@ app.get("/topics", async (req, res) => {
 app.get("/therapy", async (req, res) => {
   const supabase = getSupabase();
   const { data, error } = await supabase.from("therapy").select();
-  console.log(data);
   if (error) {
     res.json({
       error,

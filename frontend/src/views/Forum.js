@@ -35,8 +35,9 @@ function Forum() {
 
     const fetchPosts = async () => {
         try {
-            const postResponse = await fetch('http://localhost:7001/posts');
-            const commentResponse = await fetch('http://localhost:7001/comments');
+            const userID = userInfo?.id;
+            const postResponse = await fetch(`http://localhost:7001/posts/${userID}`);
+            const commentResponse = await fetch(`http://localhost:7001/comments/${userID}`);
 
             if (postResponse.ok && commentResponse.ok) {
                 const postData = await postResponse.json();
@@ -64,9 +65,11 @@ function Forum() {
 
     // Fetch data when the component mounts
     useEffect(() => {
-        fetchPosts();
-        fetchTopics();
-    }, []);
+        if (userInfo?.id) {
+            fetchPosts();
+            fetchTopics();
+        }
+    }, [userInfo?.id]);
 
     // Function to sort posts by date
     const sortPosts = (order) => {
@@ -130,7 +133,7 @@ function Forum() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newPost),
+                body: JSON.stringify({ ...newPost, userID: userInfo?.id }),
             });
 
             if (response.ok) {
@@ -151,6 +154,62 @@ function Forum() {
         }
     };
 
+    const editPost = async () => {
+        try {
+            const response = await fetch('http://localhost:7001/posts', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title: 'dsvcsdnv', body: 'jjjjj', id: 4, userID: userInfo?.id }),
+            });
+
+            if (response.ok) {
+                // Fetch posts again to update the list with the new post
+                fetchPosts();
+                // Clear the input fields
+                setNewPost({
+                    topic_id: '', // Set an initial topic ID if needed
+                    title: '',
+                    body: '',
+                    author_name: userInfo?.email, // Use the logged-in user's email as the author
+                });
+            } else {
+                console.error('Failed to create a new post');
+            }
+        } catch (error) {
+            console.error('Error creating a new post:', error);
+        }
+    }
+
+    const deletePost = async () => {
+        try {
+            const response = await fetch('http://localhost:7001/posts', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: 6, userID: userInfo?.id }),
+            });
+
+            if (response.ok) {
+                // Fetch posts again to update the list with the new post
+                fetchPosts();
+                // Clear the input fields
+                setNewPost({
+                    topic_id: '', // Set an initial topic ID if needed
+                    title: '',
+                    body: '',
+                    author_name: userInfo?.email, // Use the logged-in user's email as the author
+                });
+            } else {
+                console.error('Failed to create a new post');
+            }
+        } catch (error) {
+            console.error('Error creating a new post:', error);
+        }
+    }
+
     return (
         <PassageAuthGuard
             unAuthComp={
@@ -163,6 +222,11 @@ function Forum() {
             }
         >
             <Banner />
+
+            <div>
+                <button onClick={editPost}>Edit</button>
+                <button onClick={deletePost}>Delete</button>
+            </div>
 
             <div>
                 <h2>Posts</h2>
@@ -192,11 +256,11 @@ function Forum() {
                             <h2>Comments</h2>
                             {post.comments.map((comment) => (
                                 <div key={comment.id}>
-                                        <ul>
-                                            <li>{comment.created_at}</li>
-                                            <li>{comment.author_name}</li>
-                                            <li>{comment.body}</li>
-                                        </ul>
+                                    <ul>
+                                        <li>{comment.created_at}</li>
+                                        <li>{comment.author_name}</li>
+                                        <li>{comment.body}</li>
+                                    </ul>
                                 </div>
                             ))}
                         </div>
