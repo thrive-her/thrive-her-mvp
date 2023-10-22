@@ -56,10 +56,10 @@ function Events() {
     <div className={styles.wrapper}>
       <PassageAuthGuard
         unAuthComp={
-          <div>
-            <div>you must be logged in</div>
-            <div>
-                <a href="/">Login</a>
+          <div className={styles.loginDashboard}>
+            <div className={styles.title}>you must be logged in</div>
+            <div className={styles.message}>
+                <a className={styles.login} href="/">Login</a>
             </div>
           </div>
         }

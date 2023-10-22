@@ -1,3 +1,24 @@
+.wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: "Lato", sans-serif;
+}
+
+.header {
+	background: white;
+	min-height: 200px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 40px;
+	color: var(--black)
+}
+
+.cardWrapper {
+	background-color: #f0efff;
+}
+
 .loginDashboard {
     margin: 0;
     position: absolute;
