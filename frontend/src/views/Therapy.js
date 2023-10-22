@@ -1,10 +1,8 @@
 import { PassageAuthGuard } from "@passageidentity/passage-react";
-import { usePassageUserInfo } from "../hooks/";
-import LogoutButton from "../components/LogoutButton";
 import styles from "../styles/Therapy.module.css";
+import Banner from "../components/banner";
 
 function Events() {
-    const { userInfo } = usePassageUserInfo();
 
     return (
         <PassageAuthGuard
@@ -17,9 +15,8 @@ function Events() {
                 </div>
             }
         >
-            <div>This is Therapy Page</div>
-            <p>Welcome, {userInfo?.email} </p>
-            <LogoutButton />
+            <Banner />
+            <p>This is Therapy page</p>
         </PassageAuthGuard>
     );
 }

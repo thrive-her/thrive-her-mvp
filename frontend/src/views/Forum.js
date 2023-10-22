@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { PassageAuthGuard } from "@passageidentity/passage-react";
 import { usePassageUserInfo } from "../hooks/";
-import LogoutButton from "../components/LogoutButton";
 import styles from "../styles/Forum.module.css";
+import Banner from "../components/banner";
 
 function Forum() {
     const { userInfo } = usePassageUserInfo();
@@ -231,9 +231,7 @@ function Forum() {
                 </div>
             }
         >
-            <div>This is Forum Page</div>
-            <p>Welcome, {userInfo?.email} </p>
-            <LogoutButton />
+            <Banner />
 
             <div>
                 <h2>Posts</h2>
