@@ -61,6 +61,7 @@
     flex: 4;
     width: 80%;
     box-sizing: border-box;
+    padding: 10px;
 }
 
 .topicList {
@@ -98,4 +99,33 @@
 
 .subTopics.open {
     display: block;
+}
+
+.postForm {
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+}
+
+.formGroup {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+label {
+    width: 40px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.postForm select,
+.postForm input,
+.postForm textarea {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 1.5;
 }

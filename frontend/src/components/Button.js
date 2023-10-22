@@ -1,10 +1,11 @@
 import styles from "../styles/Button.module.css";
 
 export const Button = (props) => {
-		const text = props.text;
+	const text = props.text;
+	const onClick = props.onClick;
 
-		return (
-			<button className={styles.button}>{text}</button>
+	return (
+		<button onClick={onClick} className={styles.button}>{text}</button>
 		)
 }
 

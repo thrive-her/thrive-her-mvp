@@ -3,8 +3,9 @@ import { PassageAuthGuard } from "@passageidentity/passage-react";
 import { usePassageUserInfo } from "../hooks/";
 import styles from "../styles/Forum.module.css";
 import Banner from "../components/banner";
+import Button from "../components/Button";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 function Forum() {
     const { userInfo } = usePassageUserInfo();
@@ -151,6 +152,11 @@ function Forum() {
         }));
     };
 
+    const handleTopicChange = (e) => {
+        const selectedTopicId = parseInt(e.target.value); // Parse the selected value to an integer
+        setSelectedTopic(selectedTopicId);
+    };
+
     // Function to toggle the visibility of the create post form
     const toggleCreatePostForm = () => {
         setShowCreatePostForm(!showCreatePostForm);
@@ -266,45 +272,51 @@ function Forum() {
                     </ul>
                 </div>
                 <div className={styles.rightCol}>
-                    <button type="button" onClick={toggleCreatePostForm}>
-                        Add Post
-                    </button>
-
+                    <Button onClick={toggleCreatePostForm} text={<><FontAwesomeIcon icon={faEdit} />   New forum post</>} />
 
                     {showCreatePostForm && (
-                        <div>
-                            <h2>Create a New Post</h2>
-                            <form>
-                                <div>
-                                    <label>Topic ID:</label>
-                                    <input
-                                        type="text"
-                                        name="topic_id"
-                                        value={newPost.topic_id}
-                                        onChange={handlePostChange}
-                                    />
+                        <div className={styles.postForm}>
+<form className={styles.postForm}>
+  <div className={styles.formGroup}>
+    <label htmlFor="topic">Topic:</label>
+    <select
+      id="topic"
+      onChange={handleTopicChange}
+      value={selectedTopic || ''}
+    >
+      <option value="">Select a topic</option>
+      {topics.map((topic) => (
+        <option key={topic.id} value={topic.id}>
+          {topic.name}
+        </option>
+      ))}
+    </select>
+  </div>
+  <div className={styles.formGroup}>
+    <label htmlFor="title">Title:</label>
+    <input
+      type="text"
+      id="title"
+      name="title"
+      value={newPost.title}
+      onChange={handlePostChange}
+    />
+  </div>
+  <div className={styles.formGroup}>
+    <label htmlFor="body">Body:</label>
+    <textarea
+      id="body"
+      name="body"
+      value={newPost.body}
+      onChange={handlePostChange}
+    />
+
                                 </div>
-                                <div>
-                                    <label>Title:</label>
-                                    <input
-                                        type="text"
-                                        name="title"
-                                        value={newPost.title}
-                                        onChange={handlePostChange}
-                                    />
-                                </div>
-                                <div>
-                                    <label>Body:</label>
-                                    <textarea
-                                        name="body"
-                                        value={newPost.body}
-                                        onChange={handlePostChange}
-                                    />
-                                </div>
-                                <button type="button" onClick={submitNewPost}>
-                                    Submit
-                                </button>
-                            </form>
+                                    <div style={{ width: 230 }}>
+          <Button onClick={submitNewPost} text="Submit" />
+    </div>
+</form>
+
                         </div>
                     )}
 
