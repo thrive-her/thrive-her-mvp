@@ -1,7 +1,7 @@
 <p>
     <img src="https://storage.googleapis.com/passage-docs/passage-logo-gradient.svg" alt="Passage logo" style="width:150px;"/>
     <img src="https://bookface-images.s3.amazonaws.com/logos/f193d070e480ede387ee00a9006482bee4a6b8dd.png" alt="Women Who Code logo" style="width:150px;"/>
-<img width="10593" alt="logo" src="https://github.com/thrive-her/thrive-her-mvp/assets/112290188/e1d510a9-218b-484c-a49b-2238cba525cd" style="width:150px;">
+<img width="10593" alt="logo" src="https://github.com/thrive-her/thrive-her-mvp/assets/112290188/1e00aec3-cdcc-4676-8e26-56c593fdf5d8" style="width:150px;">
 </p>
 
 # ThriveHer - Women Who Code Hackathon for Social Good 2023
@@ -60,7 +60,8 @@ The Therapy page provides access to tailored 1-on-1 therapy sessions.
 
 4.1. To log out, click on the logout button at the top-right corner.
 
-### User Map(Current + Future)
+### User Map(Current + Future Roadmap)
+![flow diagram Thrive HER](https://github.com/thrive-her/thrive-her-mvp/assets/112290188/548b6f2d-7a7c-494d-aa3b-969babd9433e)
 
 
 ## Technology: 
