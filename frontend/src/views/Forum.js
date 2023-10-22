@@ -3,6 +3,8 @@ import { PassageAuthGuard } from "@passageidentity/passage-react";
 import { usePassageUserInfo } from "../hooks/";
 import styles from "../styles/Forum.module.css";
 import Banner from "../components/banner";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 function Forum() {
     const { userInfo } = usePassageUserInfo();
@@ -13,6 +15,7 @@ function Forum() {
     const [searchQuery, setSearchQuery] = useState('');
     const [commentForms, setCommentForms] = useState({});
     const [showCreatePostForm, setShowCreatePostForm] = useState(false);
+    const [isTopicsOpen, setIsTopicsOpen] = useState(false);
     const [newPost, setNewPost] = useState({
         topic_id: '',
         title: '',
@@ -232,144 +235,151 @@ function Forum() {
             }
         >
             <Banner />
-
-            <div>
-                <h2>Posts</h2>
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Search posts"
-                        value={searchQuery}
-                        onChange={(e) => filterPostsBySearch(e.target.value)}
-                    />
-                </div>
-                <div>
-                    Sort by:
-                    <button onClick={() => sortPosts('newest')}>Newest</button>
-                    <button onClick={() => sortPosts('oldest')}>Oldest</button>
-                </div>
-
-                {posts.map((post) => (
-                    <div key={post.id}>
-                        <h2>Posts</h2>
-                        <ul>
-                            <li>{post.title}</li>
-                            <li>{post.created_at}</li>
-                            <li>{post.author_name}</li>
-                            <li>{post.body}</li>
-                        </ul>
-                        <div>
-                            <h2>Comments</h2>
-                            {post.comments.map((comment) => (
-                                <div key={comment.id}>
-                                        <ul>
-                                            <li>{comment.created_at}</li>
-                                            <li>{comment.author_name}</li>
-                                            <li>{comment.body}</li>
-                                        </ul>
-                                </div>
-                            ))}
-
-{commentForms[post.id] ? (
-                            <div>
-                                <h2>Create a New Comment</h2>
-                                <form>
-                                    <div>
-                                        <label>Body:</label>
-                                        <textarea
-                                            name="body"
-                                            value={newComment.body}
-                                            onChange={handleCommentChange}
-                                        />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => submitNewComment(post.id)}
-                                    >
-                                        Submit
-                                    </button>
-                                </form>
-                            </div>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={() => toggleCommentForm(post.id)}
-                            >
-                                Add Comment
-                            </button>
-                        )}
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            <div>
-                <h2>Topics</h2>
-                <ul>
-                    <li
-                        key="all"
-                        onClick={() => filterPostsByTopic(null)} // Select "All" to return to all posts
-                        style={{
-                            fontWeight: selectedTopic === null ? 'bold' : 'normal',
-                        }}
-                    >
-                        All
-                    </li>
-                    {topics.map((topic) => (
+            <div className={styles.wrapper}>
+                <div className={styles.leftCol}>
+                    <ul className={styles.topicList}>
                         <li
+                            key="all"
+                            onClick={() => {
+                                filterPostsByTopic(null);
+                                setIsTopicsOpen(!isTopicsOpen);
+                            }}
+                            className={selectedTopic === null ? styles.selected : ''}
+                        >
+                           Topics{' '}
+                            <FontAwesomeIcon
+                                icon={faChevronDown}
+                                className={isTopicsOpen ? `${styles.toggleIcon} ${styles.open}` : styles.toggleIcon}
+                            />
+                        </li>
+                        <ul className={`${styles.subTopics} ${isTopicsOpen ? styles.open : ''}`}>
+                        {topics.map((topic) => (
+                            <li
                             key={topic.id}
                             onClick={() => filterPostsByTopic(topic.id)}
-                            style={{
-                                fontWeight: selectedTopic === topic.id ? 'bold' : 'normal',
-                            }}
-                        >
+                            className={selectedTopic === topic.id ? styles.selected : ''}
+                            >
                             {topic.name}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            <button type="button" onClick={toggleCreatePostForm}>
-                Add Post
-            </button>
-
-            {showCreatePostForm && (
-                <div>
-                    <h2>Create a New Post</h2>
-                    <form>
-                        <div>
-                            <label>Topic ID:</label>
-                            <input
-                                type="text"
-                                name="topic_id"
-                                value={newPost.topic_id}
-                                onChange={handlePostChange}
-                            />
-                        </div>
-                        <div>
-                            <label>Title:</label>
-                            <input
-                                type="text"
-                                name="title"
-                                value={newPost.title}
-                                onChange={handlePostChange}
-                            />
-                        </div>
-                        <div>
-                            <label>Body:</label>
-                            <textarea
-                                name="body"
-                                value={newPost.body}
-                                onChange={handlePostChange}
-                            />
-                        </div>
-                        <button type="button" onClick={submitNewPost}>
-                            Submit
-                        </button>
-                    </form>
+                            </li>
+                        ))}
+                        </ul>
+                    </ul>
                 </div>
-            )}
+                <div className={styles.rightCol}>
+                    <button type="button" onClick={toggleCreatePostForm}>
+                        Add Post
+                    </button>
 
+
+                    {showCreatePostForm && (
+                        <div>
+                            <h2>Create a New Post</h2>
+                            <form>
+                                <div>
+                                    <label>Topic ID:</label>
+                                    <input
+                                        type="text"
+                                        name="topic_id"
+                                        value={newPost.topic_id}
+                                        onChange={handlePostChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label>Title:</label>
+                                    <input
+                                        type="text"
+                                        name="title"
+                                        value={newPost.title}
+                                        onChange={handlePostChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label>Body:</label>
+                                    <textarea
+                                        name="body"
+                                        value={newPost.body}
+                                        onChange={handlePostChange}
+                                    />
+                                </div>
+                                <button type="button" onClick={submitNewPost}>
+                                    Submit
+                                </button>
+                            </form>
+                        </div>
+                    )}
+
+
+                    <div>
+                        <h2>Posts</h2>
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Search posts"
+                                value={searchQuery}
+                                onChange={(e) => filterPostsBySearch(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            Sort by:
+                            <button onClick={() => sortPosts('newest')}>Newest</button>
+                            <button onClick={() => sortPosts('oldest')}>Oldest</button>
+                        </div>
+
+                        {posts.map((post) => (
+                            <div key={post.id}>
+                                <h2>Posts</h2>
+                                <ul>
+                                    <li>{post.title}</li>
+                                    <li>{post.created_at}</li>
+                                    <li>{post.author_name}</li>
+                                    <li>{post.body}</li>
+                                </ul>
+                                <div>
+                                    <h2>Comments</h2>
+                                    {post.comments.map((comment) => (
+                                        <div key={comment.id}>
+                                                <ul>
+                                                    <li>{comment.created_at}</li>
+                                                    <li>{comment.author_name}</li>
+                                                    <li>{comment.body}</li>
+                                                </ul>
+                                        </div>
+                                    ))}
+
+                                    {commentForms[post.id] ? (
+                                    <div>
+                                        <h2>Create a New Comment</h2>
+                                        <form>
+                                            <div>
+                                                <label>Body:</label>
+                                                <textarea
+                                                    name="body"
+                                                    value={newComment.body}
+                                                    onChange={handleCommentChange}
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => submitNewComment(post.id)}
+                                            >
+                                                Submit
+                                            </button>
+                                        </form>
+                                    </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleCommentForm(post.id)}
+                                    >
+                                        Add Comment
+                                    </button>
+                                )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </PassageAuthGuard>
     );
 }

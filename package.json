@@ -5,6 +5,9 @@
     "start-backend": "cd ./backend && npm run start"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@passageidentity/passage-elements": "^1.14.0",
     "@passageidentity/passage-node": "^2.6.0",
     "@supabase/supabase-js": "^2.38.1",
