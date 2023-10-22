@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styles from "../styles/Events.module.css";
 import { PassageAuthGuard } from "@passageidentity/passage-react";
-import { usePassageUserInfo } from "../hooks/";
-import LogoutButton from "../components/LogoutButton";
 import EventCard from "../components/EventCard";
 import health from "../assets/womens\ health\ fact\ vs\ fiction\ png.png";
 import menopause from "../assets/understanding\ menopause\ png.png";
 import mindfulness from "../assets/mindfulness\ self\ love\ png.png";
+import Banner from "../components/banner";
 
 function Events() {
-  const { userInfo } = usePassageUserInfo();
   const [events, setEvents] = useState([]);
 
   const fetchEvents = async () => {
@@ -53,20 +51,18 @@ function Events() {
   }
 
   return (
-    <div className={styles.wrapper}>
-      <PassageAuthGuard
-        unAuthComp={
-          <div>
-            <div>you must be logged in</div>
-            <div>
-                <a href="/">Login</a>
-            </div>
+    <PassageAuthGuard
+      unAuthComp={
+        <div className={styles.loginDashboard}>
+          <div className={styles.title}>You must be logged in</div>
+          <div className={styles.message}>
+            <a className={styles.login} href="/">Login</a>
           </div>
-        }
-      >
-        <div>
-          <p>Welcome, {userInfo?.email} </p>
-          <LogoutButton />
+        </div>
+      }
+    >
+      <Banner />
+        <div className={styles.wrapper}>
           <div className={styles.header}>
             <p>View upcoming events and register free!</p>
           </div>
@@ -86,7 +82,6 @@ function Events() {
           </div>
         </div>
       </PassageAuthGuard>
-    </div>
   );
 }
 

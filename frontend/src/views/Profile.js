@@ -1,6 +1,7 @@
 import { PassageProfile } from "@passageidentity/passage-react";
 import { PassageAuthGuard } from "@passageidentity/passage-react";
 import styles from "../styles/Dashboard.module.css";
+import Banner from "../components/banner";
 
 function Profile() {
   return (
@@ -14,7 +15,8 @@ function Profile() {
         </div>
       }
     >
-    <div>
+      <Banner />
+    <div className="profile-container">
       <PassageProfile />
     </div>
     </PassageAuthGuard>
