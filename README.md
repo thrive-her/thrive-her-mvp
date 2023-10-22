@@ -16,6 +16,8 @@ Our project addresses the challenge of providing a safe and tailored community f
 
 This guide will walk you through how to use our platform effectively. Our solution is built with React for an interactive interface, Passage Authentication for enhanced security and user-friendliness, and Express and Node for scalability. Once you've logged in, you can access four main pages: Forum, Events, Crisis Text Line, and Therapy. Let's get started!
 
+## Demo: 
+
 ### Section 1: Logging In
 
 1.1. Open your web browser and navigate to our platform's URL.
@@ -57,6 +59,12 @@ The Therapy page provides access to tailored 1-on-1 therapy sessions.
 ### Section 4: Logging Out
 
 4.1. To log out, click on the logout button at the top-right corner.
+
+### User Map(Current + Future)
+
+
+## Technology: 
+This project was built utilizing a combination of React, Passage Authentication, Express, Node, and Supabase. 
 
 ## Passage
 
