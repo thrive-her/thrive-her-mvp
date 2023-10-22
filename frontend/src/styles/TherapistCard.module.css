@@ -1,0 +1,32 @@
+.wrapper {
+	background: white;
+	display: inline-block;
+	text-align: center;
+	border-radius: 7px;
+	width: 208px;
+	height: 326px;
+	margin: 50px 12px 50px 12px;
+}
+
+.imageWrapper {
+	min-height: 100px;
+	width: 50%;
+	border-radius: 100%;
+	margin: auto;
+}
+
+.name {
+	color: var(--black);
+	font-size: 16px;
+}
+
+.title {
+	font-size: 12px;
+	color: var(--greyMedium)
+}
+
+.description {
+	font-size: 12px;
+	padding: 0px 20px 20px 20px;
+	color: var(--greyMedium)
+}
