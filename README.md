@@ -18,6 +18,11 @@ This guide will walk you through how to use our platform effectively. Our soluti
 
 ## Demo: 
 
+
+https://github.com/thrive-her/thrive-her-mvp/assets/112290188/6efa5ddf-4d4c-43ee-9314-c9463dd0f459
+
+
+
 ### Section 1: Logging In
 
 1.1. Open your web browser and navigate to our platform's URL.
