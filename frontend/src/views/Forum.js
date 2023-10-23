@@ -161,6 +161,7 @@ function Forum() {
 
     const handleTopicChange = (e) => {
         const selectedTopicId = parseInt(e.target.value); // Parse the selected value to an integer
+        newPost.topic_id = selectedTopicId;
         setSelectedTopic(selectedTopicId);
     };
 
