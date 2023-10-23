@@ -3,6 +3,9 @@ import { PassageAuthGuard } from "@passageidentity/passage-react";
 import { usePassageUserInfo } from "../hooks/";
 import styles from "../styles/Forum.module.css";
 import Banner from "../components/banner";
+import Button from "../components/Button";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faEdit, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 function Forum() {
     const { userInfo } = usePassageUserInfo();
@@ -11,12 +14,27 @@ function Forum() {
     const [originalPosts, setOriginalPosts] = useState([]);
     const [selectedTopic, setSelectedTopic] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [commentForms, setCommentForms] = useState({});
+    const [showCreatePostForm, setShowCreatePostForm] = useState(false);
+    const [isTopicsOpen, setIsTopicsOpen] = useState(false);
+    const [isNewest, setIsNewest] = useState(true);
     const [newPost, setNewPost] = useState({
         topic_id: '',
         title: '',
         body: '',
         author_name: userInfo? `${userInfo.first_name} ${userInfo.last_name ? userInfo.last_name.charAt(0) : ''}`: '', // Use the logged-in user's name
     });
+
+    const [newComment, setNewComment] = useState({
+        post_id: '', // populated with post
+        body: '',
+        author_name: userInfo? `${userInfo.first_name} ${userInfo.last_name ? userInfo.last_name.charAt(0) : ''}`: '', // Use the logged-in user's name
+    });
+
+    function formatDate(date_string) {
+        let date = new Date(date_string)
+        return date.toLocaleDateString('en-us', {weekday: "long", year: "numeric", month: "long", day: "numeric"})
+    }
 
     // Function to fetch data from the backend API
     const fetchData = async (endpoint, setState, errorText) => {
@@ -72,11 +90,12 @@ function Forum() {
     }, [userInfo?.id]);
 
     // Function to sort posts by date
-    const sortPosts = (order) => {
+    const sortPosts = () => {
+        setIsNewest(!isNewest);
         const sortedPosts = [...posts];
-        if (order === 'newest') {
+        if (isNewest) {
             sortedPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        } else if (order === 'oldest') {
+        } else {
             sortedPosts.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
         }
         setPosts(sortedPosts);
@@ -118,12 +137,40 @@ function Forum() {
         setPosts(filteredPosts);
     };
 
+
     const handlePostChange = (e) => {
         const { name, value } = e.target;
         setNewPost({
             ...newPost,
             [name]: value,
         });
+    };
+
+    const handleCommentChange = (e) => {
+        const { name, value } = e.target;
+        setNewComment({
+            ...newComment,
+            [name]: value,
+        });
+    };
+
+    // Function to handle comment form state
+    const toggleCommentForm = (postId) => {
+        setCommentForms((prevForms) => ({
+            ...prevForms,
+            [postId]: !prevForms[postId],
+        }));
+    };
+
+    const handleTopicChange = (e) => {
+        const selectedTopicId = parseInt(e.target.value); // Parse the selected value to an integer
+        newPost.topic_id = selectedTopicId;
+        setSelectedTopic(selectedTopicId);
+    };
+
+    // Function to toggle the visibility of the create post form
+    const toggleCreatePostForm = () => {
+        setShowCreatePostForm(!showCreatePostForm);
     };
 
     const submitNewPost = async () => {
@@ -154,61 +201,44 @@ function Forum() {
         }
     };
 
-    const editPost = async () => {
+    const submitNewComment = async (postId) => {
         try {
-            const response = await fetch('http://localhost:7001/posts', {
-                method: 'PUT',
+            const postToComment = posts.find(post => post.id === postId);
+            if (!postToComment) {
+                console.error('Post not found for comment');
+                return;
+            }
+
+            const response = await fetch('http://localhost:7001/comments', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ title: 'dsvcsdnv', body: 'jjjjj', id: 4, userID: userInfo?.id }),
+                body: JSON.stringify({
+                    post_id: postId,
+                    body: newComment.body,
+                    author_name: newComment.author_name,
+                }),
             });
 
             if (response.ok) {
-                // Fetch posts again to update the list with the new post
+                // Fetch posts again to update the list with the new comment
                 fetchPosts();
                 // Clear the input fields
-                setNewPost({
-                    topic_id: '', // Set an initial topic ID if needed
-                    title: '',
+                setNewComment({
+                    post_id: '', // Reset post_id
                     body: '',
                     author_name: userInfo?.email, // Use the logged-in user's email as the author
                 });
+                // Close the comment form
+                toggleCommentForm(postId);
             } else {
-                console.error('Failed to create a new post');
+                console.error('Failed to create a new comment');
             }
         } catch (error) {
-            console.error('Error creating a new post:', error);
+            console.error('Error creating a new comment:', error);
         }
-    }
-
-    const deletePost = async () => {
-        try {
-            const response = await fetch('http://localhost:7001/posts', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id: 6, userID: userInfo?.id }),
-            });
-
-            if (response.ok) {
-                // Fetch posts again to update the list with the new post
-                fetchPosts();
-                // Clear the input fields
-                setNewPost({
-                    topic_id: '', // Set an initial topic ID if needed
-                    title: '',
-                    body: '',
-                    author_name: userInfo?.email, // Use the logged-in user's email as the author
-                });
-            } else {
-                console.error('Failed to create a new post');
-            }
-        } catch (error) {
-            console.error('Error creating a new post:', error);
-        }
-    }
+    };
 
     return (
         <PassageAuthGuard
@@ -222,113 +252,141 @@ function Forum() {
             }
         >
             <Banner />
-
-            <div>
-                <button onClick={editPost}>Edit</button>
-                <button onClick={deletePost}>Delete</button>
-            </div>
-
-            <div>
-                <h2>Posts</h2>
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Search posts"
-                        value={searchQuery}
-                        onChange={(e) => filterPostsBySearch(e.target.value)}
-                    />
-                </div>
-                <div>
-                    Sort by:
-                    <button onClick={() => sortPosts('newest')}>Newest</button>
-                    <button onClick={() => sortPosts('oldest')}>Oldest</button>
-                </div>
-
-                {posts.map((post) => (
-                    <div key={post.id}>
-                        <ul>
-                            <li>{post.title}</li>
-                            <li>{post.created_at}</li>
-                            <li>{post.author_name}</li>
-                            <li>{post.body}</li>
-                        </ul>
-                        <div>
-                            <h2>Comments</h2>
-                            {post.comments.map((comment) => (
-                                <div key={comment.id}>
-                                    <ul>
-                                        <li>{comment.created_at}</li>
-                                        <li>{comment.author_name}</li>
-                                        <li>{comment.body}</li>
-                                    </ul>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            <div>
-                <h2>Topics</h2>
-                <ul>
-                    <li
-                        key="all"
-                        onClick={() => filterPostsByTopic(null)} // Select "All" to return to all posts
-                        style={{
-                            fontWeight: selectedTopic === null ? 'bold' : 'normal',
-                        }}
-                    >
-                        All
-                    </li>
-                    {topics.map((topic) => (
+            <div className={styles.wrapper}>
+                <div className={styles.leftCol}>
+                    <ul className={styles.topicList}>
                         <li
+                            key="all"
+                            onClick={() => {
+                                filterPostsByTopic(null);
+                                setIsTopicsOpen(!isTopicsOpen);
+                            }}
+                            className={selectedTopic === null ? styles.selected : ''}
+                        >
+                           Topics{' '}
+                            <FontAwesomeIcon
+                                icon={faChevronDown}
+                                className={isTopicsOpen ? `${styles.toggleIcon} ${styles.open}` : styles.toggleIcon}
+                            />
+                        </li>
+                        <ul className={`${styles.subTopics} ${isTopicsOpen ? styles.open : ''}`}>
+                        {topics.map((topic) => (
+                            <li
                             key={topic.id}
                             onClick={() => filterPostsByTopic(topic.id)}
-                            style={{
-                                fontWeight: selectedTopic === topic.id ? 'bold' : 'normal',
-                            }}
-                        >
+                            className={selectedTopic === topic.id ? styles.selected : ''}
+                            >
                             {topic.name}
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                            </li>
+                        ))}
+                        </ul>
+                    </ul>
+                </div>
+                <div className={styles.rightCol}>
+                    <Button onClick={toggleCreatePostForm} text={<><FontAwesomeIcon icon={faEdit} />   New forum post</>} />
 
-            <div>
-                <h2>Create a New Post</h2>
-                <form>
-                    <div>
-                        <label>Topic ID:</label>
-                        <input
-                            type="text"
-                            name="topic_id"
-                            value={newPost.topic_id}
-                            onChange={handlePostChange}
-                        />
-                    </div>
-                    <div>
-                        <label>Title:</label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={newPost.title}
-                            onChange={handlePostChange}
-                        />
-                    </div>
-                    <div>
-                        <label>Body:</label>
-                        <textarea
-                            name="body"
-                            value={newPost.body}
-                            onChange={handlePostChange}
-                        />
-                    </div>
-                    <button type="button" onClick={submitNewPost}>
-                        Submit
-                    </button>
-                </form>
-            </div>
+                    {showCreatePostForm && (
+                        <div className={styles.postForm}>
+                            <form className={styles.postForm}>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="topic">Topic:</label>
+                                    <select
+                                    id="topic"
+                                    onChange={handleTopicChange}
+                                    value={selectedTopic || ''}
+                                    >
+                                    <option value="">Select a topic</option>
+                                    {topics.map((topic) => (
+                                        <option key={topic.id} value={topic.id}>
+                                        {topic.name}
+                                        </option>
+                                    ))}
+                                    </select>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="title">Title:</label>
+                                    <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    value={newPost.title}
+                                    onChange={handlePostChange}
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="body">Body:</label>
+                                    <textarea
+                                    id="body"
+                                    name="body"
+                                    value={newPost.body}
+                                    onChange={handlePostChange}
+                                    />
 
+                                </div>
+                                <div style={{ width: 230 }}>
+                                    <Button onClick={submitNewPost} text="Submit" />
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    <div>
+                        <div className={styles.search}>
+                            <input
+                                type="text"
+                                placeholder="Search forum"
+                                value={searchQuery}
+                                onChange={(e) => filterPostsBySearch(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            Sort by:
+                            <div style={{display:'inline', marginLeft: 10, cursor: 'pointer'}} onClick={() => sortPosts()}>Newest</div>
+                            <FontAwesomeIcon
+                                icon={faChevronDown}
+                                style={{marginLeft:10}}
+                                className={isNewest ? `${styles.toggleIcon} ${styles.open}` : styles.toggleIcon}
+                            />
+                        </div>
+                    </div>
+
+                        {posts.map((post) => (
+                            <div key={post.id} className={styles.postContainer}>
+                                <div className={styles.authorName}>{post.author_name} * {formatDate(post.created_at)}</div>
+                                <h2>{post.title}</h2>
+                                <p>{post.body}</p>
+                                {commentForms[post.id] ? (
+                                    <div style={{ marginTop: 10 }} className={styles.postForm}>
+                                        <div style={{width:230, marginTop: 20, marginBottom: 20}}><Button onClick={() => toggleCommentForm(post.id)} text='Add comment'/></div>
+                                        <form className={styles.postForm}>
+                                            <div className={styles.formGroup}>
+                                                <textarea
+                                                    name="body"
+                                                    value={newComment.body}
+                                                    onChange={handleCommentChange}
+                                                />
+                                            </div>
+                                            <div style={{width:230}}><Button onClick={() => submitNewComment(post.id)} text='Submit'/></div>
+                                        </form>
+                                    </div>
+                                ) : (
+                                    <div style={{width:230, marginTop: 20, marginBottom: 20}}>
+                                        <Button onClick={() => toggleCommentForm(post.id)} text='Add comment' />
+                                    </div>
+                                )}
+                                <div>
+                                    <h3>Comments</h3>
+                                    {post.comments.map((comment) => (
+                                        <div key={comment.id} style={{marginLeft:20}}>
+                                            <div className={styles.authorName}>{comment.author_name} * {formatDate(comment.created_at)}</div>
+                                            <p style={{fontSize:24}}>{comment.body}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
         </PassageAuthGuard>
     );
 }
