@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { PassageAuthGuard } from "@passageidentity/passage-react";
 import { usePassageUserInfo } from "../hooks/";
 import styles from "../styles/Therapy.module.css";
-import LogoutButton from "../components/LogoutButton";
 import { TherapistCard } from "../components/TherapistCard";
 import brad from "../assets/brad\ smith.png";
 import brenda from "../assets/brenda\ lee.png";
 import jasmine from "../assets/jasmine\ grant.png";
 import niva from "../assets/niva\ conley.png";
+import Banner from "../components/banner";
+
 
 function Therapy() {
   const { userInfo } = usePassageUserInfo();
@@ -50,7 +51,6 @@ function Therapy() {
   }
 
   return (
-    <div className={styles.wrapper}>
       <PassageAuthGuard
         unAuthComp={
           <div className={styles.loginDashboard}>
@@ -61,9 +61,8 @@ function Therapy() {
           </div>
         }
       >
-        <div>
-          <p>Welcome, {userInfo?.email} </p>
-          <LogoutButton />
+        <Banner />
+        <div className={styles.wrapper}>
           <div className={styles.header}>
             <p>We can support you with:</p>
           </div>
@@ -80,7 +79,6 @@ function Therapy() {
           </div>
         </div>
       </PassageAuthGuard>
-    </div>
   );
 }
 
