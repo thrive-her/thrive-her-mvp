@@ -53,8 +53,9 @@ function Forum() {
 
     const fetchPosts = async () => {
         try {
-            const postResponse = await fetch('http://localhost:7001/posts');
-            const commentResponse = await fetch('http://localhost:7001/comments');
+            const userID = userInfo?.id;
+            const postResponse = await fetch(`http://localhost:7001/posts/${userID}`);
+            const commentResponse = await fetch(`http://localhost:7001/comments/${userID}`);
 
             if (postResponse.ok && commentResponse.ok) {
                 const postData = await postResponse.json();
@@ -82,9 +83,11 @@ function Forum() {
 
     // Fetch data when the component mounts
     useEffect(() => {
-        fetchPosts();
-        fetchTopics();
-    }, []);
+        if (userInfo?.id) {
+            fetchPosts();
+            fetchTopics();
+        }
+    }, [userInfo?.id]);
 
     // Function to sort posts by date
     const sortPosts = () => {
@@ -177,7 +180,7 @@ function Forum() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newPost),
+                body: JSON.stringify({ ...newPost, userID: userInfo?.id }),
             });
 
             if (response.ok) {
