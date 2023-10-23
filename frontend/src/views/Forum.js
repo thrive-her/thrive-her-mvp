@@ -5,7 +5,7 @@ import styles from "../styles/Forum.module.css";
 import Banner from "../components/banner";
 import Button from "../components/Button";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faEdit, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 function Forum() {
     const { userInfo } = usePassageUserInfo();
@@ -17,6 +17,7 @@ function Forum() {
     const [commentForms, setCommentForms] = useState({});
     const [showCreatePostForm, setShowCreatePostForm] = useState(false);
     const [isTopicsOpen, setIsTopicsOpen] = useState(false);
+    const [isNewest, setIsNewest] = useState(true);
     const [newPost, setNewPost] = useState({
         topic_id: '',
         title: '',
@@ -29,6 +30,11 @@ function Forum() {
         body: '',
         author_name: userInfo? `${userInfo.first_name} ${userInfo.last_name ? userInfo.last_name.charAt(0) : ''}`: '', // Use the logged-in user's name
     });
+
+    function formatDate(date_string) {
+        let date = new Date(date_string)
+        return date.toLocaleDateString('en-us', {weekday: "long", year: "numeric", month: "long", day: "numeric"})
+    }
 
     // Function to fetch data from the backend API
     const fetchData = async (endpoint, setState, errorText) => {
@@ -81,11 +87,12 @@ function Forum() {
     }, []);
 
     // Function to sort posts by date
-    const sortPosts = (order) => {
+    const sortPosts = () => {
+        setIsNewest(!isNewest);
         const sortedPosts = [...posts];
-        if (order === 'newest') {
+        if (isNewest) {
             sortedPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        } else if (order === 'oldest') {
+        } else {
             sortedPosts.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
         }
         setPosts(sortedPosts);
@@ -276,122 +283,106 @@ function Forum() {
 
                     {showCreatePostForm && (
                         <div className={styles.postForm}>
-<form className={styles.postForm}>
-  <div className={styles.formGroup}>
-    <label htmlFor="topic">Topic:</label>
-    <select
-      id="topic"
-      onChange={handleTopicChange}
-      value={selectedTopic || ''}
-    >
-      <option value="">Select a topic</option>
-      {topics.map((topic) => (
-        <option key={topic.id} value={topic.id}>
-          {topic.name}
-        </option>
-      ))}
-    </select>
-  </div>
-  <div className={styles.formGroup}>
-    <label htmlFor="title">Title:</label>
-    <input
-      type="text"
-      id="title"
-      name="title"
-      value={newPost.title}
-      onChange={handlePostChange}
-    />
-  </div>
-  <div className={styles.formGroup}>
-    <label htmlFor="body">Body:</label>
-    <textarea
-      id="body"
-      name="body"
-      value={newPost.body}
-      onChange={handlePostChange}
-    />
+                            <form className={styles.postForm}>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="topic">Topic:</label>
+                                    <select
+                                    id="topic"
+                                    onChange={handleTopicChange}
+                                    value={selectedTopic || ''}
+                                    >
+                                    <option value="">Select a topic</option>
+                                    {topics.map((topic) => (
+                                        <option key={topic.id} value={topic.id}>
+                                        {topic.name}
+                                        </option>
+                                    ))}
+                                    </select>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="title">Title:</label>
+                                    <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    value={newPost.title}
+                                    onChange={handlePostChange}
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="body">Body:</label>
+                                    <textarea
+                                    id="body"
+                                    name="body"
+                                    value={newPost.body}
+                                    onChange={handlePostChange}
+                                    />
 
                                 </div>
-                                    <div style={{ width: 230 }}>
-          <Button onClick={submitNewPost} text="Submit" />
-    </div>
-</form>
-
+                                <div style={{ width: 230 }}>
+                                    <Button onClick={submitNewPost} text="Submit" />
+                                </div>
+                            </form>
                         </div>
                     )}
 
-
                     <div>
-                        <h2>Posts</h2>
-                        <div>
+                        <div className={styles.search}>
                             <input
                                 type="text"
-                                placeholder="Search posts"
+                                placeholder="Search forum"
                                 value={searchQuery}
                                 onChange={(e) => filterPostsBySearch(e.target.value)}
                             />
                         </div>
                         <div>
                             Sort by:
-                            <button onClick={() => sortPosts('newest')}>Newest</button>
-                            <button onClick={() => sortPosts('oldest')}>Oldest</button>
+                            <div style={{display:'inline', marginLeft: 10, cursor: 'pointer'}} onClick={() => sortPosts()}>Newest</div>
+                            <FontAwesomeIcon
+                                icon={faChevronDown}
+                                style={{marginLeft:10}}
+                                className={isNewest ? `${styles.toggleIcon} ${styles.open}` : styles.toggleIcon}
+                            />
                         </div>
+                    </div>
 
                         {posts.map((post) => (
-                            <div key={post.id}>
-                                <h2>Posts</h2>
-                                <ul>
-                                    <li>{post.title}</li>
-                                    <li>{post.created_at}</li>
-                                    <li>{post.author_name}</li>
-                                    <li>{post.body}</li>
-                                </ul>
-                                <div>
-                                    <h2>Comments</h2>
-                                    {post.comments.map((comment) => (
-                                        <div key={comment.id}>
-                                                <ul>
-                                                    <li>{comment.created_at}</li>
-                                                    <li>{comment.author_name}</li>
-                                                    <li>{comment.body}</li>
-                                                </ul>
-                                        </div>
-                                    ))}
-
-                                    {commentForms[post.id] ? (
-                                    <div>
-                                        <h2>Create a New Comment</h2>
-                                        <form>
-                                            <div>
-                                                <label>Body:</label>
+                            <div key={post.id} className={styles.postContainer}>
+                                <div className={styles.authorName}>{post.author_name} * {formatDate(post.created_at)}</div>
+                                <h2>{post.title}</h2>
+                                <p>{post.body}</p>
+                                {commentForms[post.id] ? (
+                                    <div style={{ marginTop: 10 }} className={styles.postForm}>
+                                        <div style={{width:230, marginTop: 20, marginBottom: 20}}><Button onClick={() => toggleCommentForm(post.id)} text='Add comment'/></div>
+                                        <form className={styles.postForm}>
+                                            <div className={styles.formGroup}>
                                                 <textarea
                                                     name="body"
                                                     value={newComment.body}
                                                     onChange={handleCommentChange}
                                                 />
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => submitNewComment(post.id)}
-                                            >
-                                                Submit
-                                            </button>
+                                            <div style={{width:230}}><Button onClick={() => submitNewComment(post.id)} text='Submit'/></div>
                                         </form>
                                     </div>
                                 ) : (
-                                    <button
-                                        type="button"
-                                        onClick={() => toggleCommentForm(post.id)}
-                                    >
-                                        Add Comment
-                                    </button>
+                                    <div style={{width:230, marginTop: 20, marginBottom: 20}}>
+                                        <Button onClick={() => toggleCommentForm(post.id)} text='Add comment' />
+                                    </div>
                                 )}
+                                <div>
+                                    <h3>Comments</h3>
+                                    {post.comments.map((comment) => (
+                                        <div key={comment.id} style={{marginLeft:20}}>
+                                            <div className={styles.authorName}>{comment.author_name} * {formatDate(comment.created_at)}</div>
+                                            <p style={{fontSize:24}}>{comment.body}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
-            </div>
         </PassageAuthGuard>
     );
 }

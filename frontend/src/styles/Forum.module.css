@@ -121,11 +121,29 @@ label {
 
 .postForm select,
 .postForm input,
-.postForm textarea {
+.postForm textarea,
+.search input {
     width: 80%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
     line-height: 1.5;
+}
+
+.search {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.postContainer {
+    background-color: #F0EFFE;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.authorName {
+    color: gray;
+    font-size: 16px;
 }
